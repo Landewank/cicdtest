@@ -1,40 +1,38 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { addCart } from "../redux/action";
-
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-
 import { Link } from "react-router-dom";
 
 const Products = () => {
   const [data, setData] = useState([]);
   const [filter, setFilter] = useState(data);
   const [loading, setLoading] = useState(false);
-  let componentMounted = true;
+  const componentMounted = useRef(true);
 
   const dispatch = useDispatch();
 
   const addProduct = (product) => {
-    dispatch(addCart(product))
-  }
+    dispatch(addCart(product));
+  };
 
   useEffect(() => {
     const getProducts = async () => {
       setLoading(true);
       const response = await fetch("https://fakestoreapi.com/products/");
-      if (componentMounted) {
+      if (componentMounted.current) {
         setData(await response.clone().json());
         setFilter(await response.json());
         setLoading(false);
       }
-
-      return () => {
-        componentMounted = false;
-      };
     };
 
     getProducts();
+
+    return () => {
+      componentMounted.current = false;
+    };
   }, []);
 
   const Loading = () => {
@@ -68,7 +66,8 @@ const Products = () => {
   const filterProduct = (cat) => {
     const updatedList = data.filter((item) => item.category === cat);
     setFilter(updatedList);
-  }
+  };
+
   const ShowProducts = () => {
     return (
       <>
@@ -102,8 +101,6 @@ const Products = () => {
                 </div>
                 <ul className="list-group list-group-flush">
                   <li className="list-group-item lead">$ {product.price}</li>
-                  {/* <li className="list-group-item">Dapibus ac facilisis in</li>
-                    <li className="list-group-item">Vestibulum at eros</li> */}
                 </ul>
                 <div className="card-body">
                   <Link to={"/product/" + product.id} className="btn btn-dark m-1">
@@ -115,12 +112,12 @@ const Products = () => {
                 </div>
               </div>
             </div>
-
           );
         })}
       </>
     );
   };
+
   return (
     <>
       <div className="container my-3 py-3">
