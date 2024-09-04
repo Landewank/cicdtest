@@ -2,7 +2,7 @@ name: cd cd on github
 
 on:
   push:
-    branches: [ "relese" ]
+    branches: [ "release" ]
   pull_request:
     branches: [ "release" ]
 
